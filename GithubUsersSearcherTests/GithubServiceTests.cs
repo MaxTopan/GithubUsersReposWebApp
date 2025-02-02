@@ -73,6 +73,51 @@ public class GithubServiceTests
 
     }
 
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task GetUserAsync_ShouldThrowArgumentException_WhenUsernameIsNull()
+    {
+        await _githubService.GetUserAsync(null);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task GetUserAsync_ShouldThrowArgumentException_WhenUsernameIsEmpty()
+    {
+        await _githubService.GetUserAsync("");
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task GetUserAsync_ShouldThrowArgumentException_WhenUsernameIsWhitespace()
+    {
+        await _githubService.GetUserAsync("   ");
+    }
+
+    [TestMethod]
+    public async Task GetUserAsync_ShouldReturnNull_WhenUserDoesNotExist()
+    {
+        // Arrange: Simulate 404 Not Found response
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NotFound
+            });
+
+        // Act
+        GithubUser result = await _githubService.GetUserAsync("nonexistentuser");
+
+        // Assert
+        Assert.IsNull(result);
+    }
+    
     [TestMethod]
     public async Task GetUserReposAsync_ValidResponse_ReturnsTop5Repos()
     {
@@ -107,5 +152,65 @@ public class GithubServiceTests
         Assert.AreEqual(5, result.Count);
         Assert.AreEqual("Repo2", result[0].Name); // Repo with highest stars should be first
         Assert.AreEqual("Repo5", result[1].Name);
+    }
+
+    [TestMethod]
+    public async Task GetUserReposAsync_ValidResponse_ReturnsTopXRepos_WhenLessThan5Repos()
+    {
+        // Arrange
+        var mockRepos = new List<GithubRepository>
+        {
+            new GithubRepository { Name = "Repo1", StargazersCount = 10, HtmlUrl = "url1" },
+            new GithubRepository { Name = "Repo2", StargazersCount = 50, HtmlUrl = "url2" },
+            new GithubRepository { Name = "Repo3", StargazersCount = 20, HtmlUrl = "url3" }
+        };
+
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonConvert.SerializeObject(mockRepos))
+            });
+
+        // Act
+        var result = await _githubService.GetUserReposAsync("https://api.github.com/users/testuser/repos");
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(3, result.Count);
+        Assert.AreEqual("Repo2", result[0].Name);
+        Assert.AreEqual("Repo3", result[1].Name);
+        Assert.AreEqual("Repo1", result[2].Name);
+    }
+
+    [TestMethod]
+    public async Task GetUserReposAsync_ValidResponse_ReturnsNoRepos_WhenThereAreNone()
+    {
+        // Arrange
+        var mockRepos = new List<GithubRepository>{};
+
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonConvert.SerializeObject(mockRepos))
+            });
+
+        // Act
+        var result = await _githubService.GetUserReposAsync("https://api.github.com/users/testuser/repos");
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(0, result.Count);
     }
 }

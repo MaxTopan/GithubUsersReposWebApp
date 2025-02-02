@@ -32,7 +32,7 @@ namespace GithubUsersSearcher.Controllers
 
             // ask the service to make the API call + process data
             var user = await _githubService.GetUserAsync(username);
-            if (user.ReposUrl == null)
+            if (user == null | user.Username == null)
             {
                 ModelState.AddModelError("username", "User not found.");
                 return View("Index");

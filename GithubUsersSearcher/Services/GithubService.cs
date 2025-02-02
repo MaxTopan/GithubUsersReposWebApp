@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -22,13 +23,18 @@ namespace GithubUsersSearcher.Services
 
         public async Task<GithubUser> GetUserAsync(string username)
         {
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(username))
             {
                 throw new ArgumentException("username cannot be null or empty", nameof(username));
             }
 
             string url = $"https://api.github.com/users/{username}";
             var response = await _httpClient.GetAsync(url);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
 
             var content = await response.Content.ReadAsStringAsync();
             var user = JsonConvert.DeserializeObject<GithubUser>(content);
