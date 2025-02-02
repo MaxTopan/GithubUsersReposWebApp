@@ -30,15 +30,6 @@ namespace GithubUsersSearcher.Services
             string url = $"https://api.github.com/users/{username}";
             var response = await _httpClient.GetAsync(url);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    throw new Exception($"User {username} not found");
-                }
-                throw new Exception($"Error fetching user data: {response.StatusCode}");
-            }
-
             var content = await response.Content.ReadAsStringAsync();
             var user = JsonConvert.DeserializeObject<GithubUser>(content);
 
