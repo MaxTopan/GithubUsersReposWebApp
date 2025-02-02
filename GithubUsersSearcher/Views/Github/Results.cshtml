@@ -4,18 +4,15 @@
     ViewBag.Title = "Results Page";
 }
 
-<h2>GitHub User Information</h2>
+<h2>GitHub User</h2>
 
-<div>
+<div class="d-flex justify-content-center align-items-center">
     <div>
-        <strong>Avatar:</strong>
         <img src="@Model.AvatarUrl" alt="User Avatar" style="width: 100px; height: 100px;" />
     </div>
-    <div>
-        <strong>Username:</strong> @Model.Username
-    </div>
-    <div>
-        <strong>Location:</strong> @Model.Location
+    <div class="d-flex flex-column">
+        <h3>🧑 <a href="@Model.HtmlUrl">@Model.Username</a></h3>
+        <h3>📍 @Model.Location </h3>
     </div>
 </div>
 
