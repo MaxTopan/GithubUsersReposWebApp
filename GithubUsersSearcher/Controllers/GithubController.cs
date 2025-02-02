@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GithubUsersSearcher.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,10 @@ namespace GithubUsersSearcher.Controllers
 {
     public class GithubController : Controller
     {
-        public GithubController()
+        private readonly GithubService _githubService;
+        public GithubController(GithubService githubService)
         {
+            _githubService = githubService;
         }
 
         public ActionResult Index()
@@ -26,9 +29,8 @@ namespace GithubUsersSearcher.Controllers
                 throw new ArgumentException("username cannot be null or empty");
             }
 
-            Console.WriteLine(username);
-
             // ask the service to make the API call + process data
+            var user = await _githubService.GetUserAsync(username);
 
             // return the results view
 
