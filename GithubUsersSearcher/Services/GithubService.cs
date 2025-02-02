@@ -43,5 +43,10 @@ namespace GithubUsersSearcher.Services
 
             return user;
         }
+
+        public Task<List<GithubRepository>> GetUserReposAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
