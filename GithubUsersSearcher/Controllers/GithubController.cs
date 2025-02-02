@@ -24,9 +24,10 @@ namespace GithubUsersSearcher.Controllers
         [HttpPost]
         public async Task<ActionResult> GetUser(string username)
         {
-            if (!string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
-                throw new ArgumentException("username cannot be null or empty");
+                ModelState.AddModelError("username", "Username cannot be empty.");
+                return View("Index");
             }
 
             // ask the service to make the API call + process data
@@ -34,7 +35,7 @@ namespace GithubUsersSearcher.Controllers
 
             // return the results view
 
-            return View();
+            return View("Results", user);
         }
     }
 }
