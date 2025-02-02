@@ -6,10 +6,12 @@
 
 <main class="d-flex justify-content-center align-items-center vh-100 flex-column">
     <h1 class="display-4">Search for a user</h1>
-    <form asp-controller="GitHub" asp-action="GetUser" method="get" class="flex-row d-flex align-items-baseline">
-        <div class="form-group">
-            <input asp-for="Username" class="form-control" placeholder="Enter GitHub Username" required />
+    @using (Html.BeginForm("GetUser", "Github", FormMethod.Post))
+    {
+        <div class="flex-row d-flex align-items-baseline">
+            @Html.TextBox("username", "", new { @class = "form-control", placeholder = "GitHub Username" })
+            <button type="submit" class="btn btn-primary">Search</button>
+            @Html.ValidationMessage("username", "", new { @class = "text-danger" })
         </div>
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
-    </form>
+    }
 </main>
