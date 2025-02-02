@@ -32,6 +32,7 @@ namespace GithubUsersSearcher.Controllers
 
             // ask the service to make the API call + process data
             var user = await _githubService.GetUserAsync(username);
+            user.GithubRepositories = await _githubService.GetUserReposAsync(user.ReposUrl);
 
             // return the results view
 
