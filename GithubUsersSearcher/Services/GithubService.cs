@@ -9,7 +9,7 @@ using System.Web;
 
 namespace GithubUsersSearcher.Services
 {
-    public class GithubService
+    public class GithubService : IGithubService
     {
         private readonly HttpClient _httpClient;
 
