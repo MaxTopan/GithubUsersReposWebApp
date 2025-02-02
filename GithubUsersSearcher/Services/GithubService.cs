@@ -1,5 +1,6 @@
 ﻿using GithubUsersSearcher.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,33 @@ namespace GithubUsersSearcher.Services
             var user = JsonConvert.DeserializeObject<GithubUser>(content);
 
             return user;
+        }
+
+        public async Task<List<GithubRepository>> GetUserReposAsync(string reposUrl)
+        {
+            var response = await _httpClient.GetAsync(reposUrl);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Error fetching repositories: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var reposJson = JArray.Parse(content);
+
+            var repos = new List<GithubRepository>();
+            foreach (var repo in reposJson)
+            {
+                repos.Add(new GithubRepository
+                {
+                    Name = repo["name"]?.ToString(),
+                    Description = repo["description"]?.ToString(),
+                    StargazersCount = repo["stargazers_count"]?.ToObject<int>() ?? 0,
+                    HtmlUrl = repo["html_url"]?.ToString()
+                });
+            }
+
+            repos.Sort((x, y) => y.StargazersCount.CompareTo(x.StargazersCount));
+            return repos.Take(5).ToList();
         }
     }
 }
