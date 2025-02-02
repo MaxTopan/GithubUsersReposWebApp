@@ -25,6 +25,6 @@ namespace GithubUsersSearcher.Models
 
         [JsonProperty("repos_url")]
         public string ReposUrl { get; set; }
-        public GithubRepository[] GithubRepositories { get; set; }
+        public List<GithubRepository> GithubRepositories { get; set; }
     }
 }

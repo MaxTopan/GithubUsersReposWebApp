@@ -1,0 +1,51 @@
+﻿@model GithubUsersSearcher.Models.GithubUser
+
+@{
+    ViewBag.Title = "Results Page";
+}
+
+<h2>GitHub User Information</h2>
+
+<div>
+    <div>
+        <strong>Avatar:</strong>
+        <img src="@Model.AvatarUrl" alt="User Avatar" style="width: 100px; height: 100px;" />
+    </div>
+    <div>
+        <strong>Username:</strong> @Model.Username
+    </div>
+    <div>
+        <strong>Location:</strong> @Model.Location
+    </div>
+</div>
+
+<h3>Top 5 Repositories</h3>
+
+@if (Model.GithubRepositories != null && Model.GithubRepositories.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Stargazers</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var repo in Model.GithubRepositories)
+            {
+                <tr>
+                    <td>
+                        <a href="@repo.HtmlUrl" target="_blank">@repo.Name</a>
+                    </td>
+                    <td>@repo.Description</td>
+                    <td>@repo.StargazersCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No repos found for this user.</p>
+}
