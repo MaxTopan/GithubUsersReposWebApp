@@ -24,7 +24,7 @@ namespace GithubUsersSearcher.Controllers
         [HttpPost]
         public async Task<ActionResult> GetUser(string username)
         {
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrEmpty(username))
             {
                 ModelState.AddModelError("username", "Username cannot be empty.");
                 return View("Index");

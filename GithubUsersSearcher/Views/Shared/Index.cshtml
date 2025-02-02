@@ -11,7 +11,7 @@
         <div class="flex-row d-flex align-items-baseline">
             @Html.TextBox("username", "", new { @class = "form-control", placeholder = "GitHub Username" })
             <button type="submit" class="btn btn-primary">Search</button>
-            @Html.ValidationMessage("username", "", new { @class = "text-danger" })
         </div>
+        @Html.ValidationMessage("username", "", new { @class = "text-danger" })
     }
 </main>
